@@ -3,27 +3,20 @@ import { Geist, Geist_Mono, Oxanium } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { QueryClient } from "@tanstack/react-query";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { Toaster } from "@/components/ui/sonner";
 
-const oxanium = Oxanium({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  // Disable automatic preload to avoid browser warnings when the font
-  // resource is preloaded but not used immediately.
-  preload: false,
-});
+const oxanium = Oxanium({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  // See note above — opt out of automatic preload
-  preload: false,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -46,14 +39,15 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
-            {children}
-          </ThemeProvider>
+        {children}
+        <Toaster/>
+        </ThemeProvider>
         </QueryProvider>
-      </body>
+        </body>
     </html>
   );
 }

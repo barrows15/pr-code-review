@@ -1,19 +1,29 @@
-import React from 'react'
-import {} from "@/components/ui/tooltip";
-import {} from "@/features/dashboard/components/dashboard-sidebar";
 
-import {UserMenuUser} from "@/features/auth/components/user-menu";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { DashboardSidebar } from "@/features/dashboard/components/dashboard-sidebar"
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
+import { UserMenuUser } from "@/features/auth/components/user-menu";
 
-type DasshboardShellProps = {
-  children : React.ReactNode;
+type DashboardShellProps = {
+  children: React.ReactNode;
   user: UserMenuUser;
   plan?: string;
-}
+};
 
-const dashboard1 = () => {
+export function DashboardShell({
+  children,
+  user,
+  plan,
+}: DashboardShellProps) {
   return (
-    <div>dashboard1</div>
-  )
+    <TooltipProvider>
+      <SidebarProvider>
+        <DashboardSidebar user={user} plan={plan} />
+        <SidebarInset className="min-h-svh">{children}</SidebarInset>
+      </SidebarProvider>
+    </TooltipProvider>
+  );
 }
-
-export default dashboard1

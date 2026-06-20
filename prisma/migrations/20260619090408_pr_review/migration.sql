@@ -1,14 +1,73 @@
 -- CreateTable
+CREATE TABLE "Test" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+
+    CONSTRAINT "Test_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "image" TEXT,
+    "plan" TEXT NOT NULL DEFAULT 'free',
+    "razorpaySubscriptionId" TEXT,
+    "subscriptionStatus" TEXT,
+    "subscriptionRenewsAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "github_installation" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "installationId" INTEGER NOT NULL,
+    "accountLogin" TEXT,
+    "accountType" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "github_installation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "pull_request" (
+    "id" TEXT NOT NULL,
+    "installationId" INTEGER NOT NULL,
+    "repoFullName" TEXT NOT NULL,
+    "prNumber" INTEGER NOT NULL,
+    "title" TEXT NOT NULL,
+    "authorLogin" TEXT,
+    "headSha" TEXT NOT NULL,
+    "baseBranch" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "reviewComment" TEXT,
+    "reviewedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "pull_request_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "repo_sync" (
+    "id" TEXT NOT NULL,
+    "installationId" INTEGER NOT NULL,
+    "repoFullName" TEXT NOT NULL,
+    "branch" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'pending',
+    "chunkCount" INTEGER NOT NULL DEFAULT 0,
+    "syncedAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "repo_sync_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -60,6 +119,15 @@ CREATE TABLE "verification" (
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "github_installation_userId_key" ON "github_installation"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "pull_request_repoFullName_prNumber_key" ON "pull_request"("repoFullName", "prNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "repo_sync_repoFullName_key" ON "repo_sync"("repoFullName");
+
+-- CreateIndex
 CREATE INDEX "session_userId_idx" ON "session"("userId");
 
 -- CreateIndex
@@ -70,6 +138,9 @@ CREATE INDEX "account_userId_idx" ON "account"("userId");
 
 -- CreateIndex
 CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
+
+-- AddForeignKey
+ALTER TABLE "github_installation" ADD CONSTRAINT "github_installation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
